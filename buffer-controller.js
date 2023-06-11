@@ -1,16 +1,16 @@
-const fs = require("fs");
-
 class BufferController {
   #buffer;
   #keyBoardController;
   #renderer;
   #fileName;
+  #writer
 
-  constructor(buffer, keyBoardController, renderer, fileName = "demo.txt") {
+  constructor(buffer, keyBoardController, renderer, writer, fileName = "demo.txt") {
     this.#buffer = buffer;
     this.#keyBoardController = keyBoardController;
     this.#renderer = renderer;
     this.#fileName = fileName;
+    this.#writer = writer
   }
 
   start() {
@@ -36,7 +36,7 @@ class BufferController {
 
     this.#keyBoardController.on("save", () => {
       this.#keyBoardController.stop();
-      fs.writeFileSync(this.#fileName, this.#buffer.getText());
+      this.#writer.writeFileSync(this.#fileName, this.#buffer.getText());
     });
 
     this.#keyBoardController.start();
