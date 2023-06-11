@@ -19,6 +19,7 @@ const main = () => {
 		renderer,
 		fileNameToSave
 	);
+  
 	bufferController.start();
 };
 
