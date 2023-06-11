@@ -1,6 +1,6 @@
 const { BufferController } = require("./buffer-controller");
 const { InputController } = require("./key-board-controller");
-const { Buffer, renderer } = require("./text-editor");
+const { Buffer, renderer } = require("./buffer");
 
 const keyBindings = {
 	"\r": ["new-line", "\n"],
