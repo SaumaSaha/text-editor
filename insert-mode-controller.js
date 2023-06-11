@@ -1,19 +1,25 @@
-class BufferController {
+class InsertModeController {
   #buffer;
   #keyBoardController;
   #renderer;
   #fileName;
-  #writer
+  #fs
 
-  constructor(buffer, keyBoardController, renderer, writer, fileName = "demo.txt") {
+  constructor(buffer, keyBoardController, renderer, fileSystem, fileName = "demo.txt") {
     this.#buffer = buffer;
     this.#keyBoardController = keyBoardController;
     this.#renderer = renderer;
     this.#fileName = fileName;
-    this.#writer = writer
+    this.#fs = fileSystem
   }
 
   start() {
+
+    if (this.#fs.existsSync(this.#fileName)) {
+      const fileData = this.#fs.readFileSync(this.#fileName);
+      this.#buffer.storeText(fileData)
+    }
+
     this.#keyBoardController.on("buffer-write", (char) => {
       this.#buffer.storeText(char);
       this.#renderer(this.#buffer.getText());
@@ -36,11 +42,11 @@ class BufferController {
 
     this.#keyBoardController.on("save", () => {
       this.#keyBoardController.stop();
-      this.#writer.writeFileSync(this.#fileName, this.#buffer.getText());
+      this.#fs.writeFileSync(this.#fileName, this.#buffer.getText());
     });
 
     this.#keyBoardController.start();
   }
 }
 
-exports.BufferController = BufferController;
+exports.InsertModeController = InsertModeController;

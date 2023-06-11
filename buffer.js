@@ -18,8 +18,8 @@ class Buffer {
 }
 
 const renderer = (data) => {
-  console.clear();
-  console.log(data);
+  console.clear()
+  process.stdin.write(data);
 };
 
 module.exports = { Buffer, renderer };
