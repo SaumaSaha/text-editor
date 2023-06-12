@@ -1,51 +1,40 @@
 class InsertModeController {
-  #buffer;
   #keyBoardController;
   #renderer;
-  #fileName;
-  #fs
+  #mode;
 
-  constructor(buffer, keyBoardController, renderer, fileSystem, fileName = "demo.txt") {
-    this.#buffer = buffer;
+  constructor(keyBoardController, renderer) {
     this.#keyBoardController = keyBoardController;
     this.#renderer = renderer;
-    this.#fileName = fileName;
-    this.#fs = fileSystem
+    this.#mode = "INSERT";
   }
 
-  start() {
-
-    if (this.#fs.existsSync(this.#fileName)) {
-      const fileData = this.#fs.readFileSync(this.#fileName);
-      this.#buffer.storeText(fileData)
+  start(buffer) {
+    this.#renderer(buffer.getText(), this.#mode)
+    const writeToBuffer = (char) => {
+      buffer.storeText(char);
+      this.#renderer(buffer.getText(), this.#mode);
     }
 
-    this.#keyBoardController.on("buffer-write", (char) => {
-      this.#buffer.storeText(char);
-      this.#renderer(this.#buffer.getText());
-    });
+    const addNewLine = (char) => {
+      buffer.storeText(char);
+      this.#renderer(buffer.getText(), this.#mode);
+    }
 
-    this.#keyBoardController.on("new-line", (char) => {
-      this.#buffer.storeText(char);
-      this.#renderer(this.#buffer.getText());
-    });
+    const giveBackSpace = () => {
+      buffer.removeAlphabet();
+      this.#renderer(buffer.getText(), this.#mode);
+    }
 
-    this.#keyBoardController.on("backspace", () => {
-      this.#buffer.removeAlphabet();
-      this.#renderer(this.#buffer.getText());
-    });
+    this.#keyBoardController.on("buffer-write", writeToBuffer);
+    this.#keyBoardController.on("new-line", addNewLine);
+    this.#keyBoardController.on("backspace", giveBackSpace);
+  }
 
-    this.#keyBoardController.on("stop", () => {
-      this.#keyBoardController.stop();
-      this.#renderer(this.#buffer.getText());
-    });
-
-    this.#keyBoardController.on("save", () => {
-      this.#keyBoardController.stop();
-      this.#fs.writeFileSync(this.#fileName, this.#buffer.getText());
-    });
-
-    this.#keyBoardController.start();
+  stop() {
+    this.#keyBoardController.removeAllListeners("buffer-write");
+    this.#keyBoardController.removeAllListeners("new-line");
+    this.#keyBoardController.removeAllListeners("backspace");
   }
 }
 

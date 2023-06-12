@@ -15,11 +15,22 @@ class Buffer {
   getText() {
     return this.#text;
   }
+
+  deleteLine() {
+    const lastIndexOfNewLine = this.#text.lastIndexOf("\n")
+    this.#text = this.#text.slice(0, lastIndexOfNewLine)
+  }
+
+  deleteWord() {
+    const lastIndexOfSpace = this.#text.lastIndexOf(" ")
+    this.#text = this.#text.slice(0, lastIndexOfSpace)
+  }
 }
 
-const renderer = (data) => {
-  console.clear()
-  process.stdin.write(data);
+const renderer = (data, mode) => {
+  console.clear();
+  process.stdout.write(mode + " MODE\n");
+  process.stdout.write(data);
 };
 
 module.exports = { Buffer, renderer };
