@@ -5,7 +5,7 @@ class EditorController {
   #fileName;
   #buffer;
   #fs;
-  #keyboardController;
+  #kbController;
 
   constructor(modeControllers, keyboardController, fileSystem, buffer, fileName = "untitled.txt") {
     this.#modeControllers = modeControllers;
@@ -14,7 +14,7 @@ class EditorController {
     this.#fs = fileSystem;
     this.#fileName = fileName;
     this.#buffer = buffer;
-    this.#keyboardController = keyboardController;
+    this.#kbController = keyboardController;
   }
 
   #changeMode() {
@@ -30,22 +30,22 @@ class EditorController {
       this.#buffer.storeText(fileData);
     }
 
-    this.#keyboardController.on("stop", () => {
-      this.#keyboardController.stop()
+    this.#kbController.on("stop", () => {
+      this.#kbController.stop()
     })
 
-    this.#keyboardController.on("save", () => {
-      this.#keyboardController.stop()
+    this.#kbController.on("save", () => {
+      this.#kbController.stop()
       const content = this.#buffer.getText()
       this.#fs.writeFileSync(this.#fileName, content)
     })
 
-    this.#keyboardController.on("change-mode", () => {
+    this.#kbController.on("change-mode", () => {
       this.#changeMode();
     })
 
     this.#currentMode.start(this.#buffer);
-    this.#keyboardController.start()
+    this.#kbController.start()
   }
 }
 

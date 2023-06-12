@@ -10,24 +10,18 @@ class InputController extends EventEmitter {
     this.#keyBindings = keyBindings;
   }
 
-  // #hideCursor() {
-  //   process.stdout.write('\u001B[?25l');
-  // }
-
   #setUpEnvironment() {
     this.#stdin.setRawMode(true);
     this.#stdin.setEncoding("utf-8");
   }
-
+  #findEventToEmit(key){
+    return this.#keyBindings[key] || ["buffer-write", key];
+  }
   start() {
     this.#setUpEnvironment();
     this.#stdin.on("data", (key) => {
-      if (key in this.#keyBindings) {
-        const [event, data] = this.#keyBindings[key];
-        this.emit(event, data);
-      } else {
-        this.emit("buffer-write", key);
-      }
+      const [event,eData] = this.#findEventToEmit(key);
+      this.emit(event, eData);
     });
   }
 

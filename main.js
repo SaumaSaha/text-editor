@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { InsertModeController } = require("./src/insert-mode-controller");
 const { InputController } = require("./src/key-board-controller");
-const { Buffer, renderer } = require("./src/buffer");
+const { Buffer } = require("./src/buffer");
 const { NormalModeController } = require("./src/normal-node-controller");
 const { EditorController } = require("./src/editor-controller");
 
@@ -13,6 +13,11 @@ const keyBindings = {
   "\x04": ["delete-line", "deleteLine"],
   "\x17": ["delete-word", "deleteWord"],
   "\x03": ["change-mode", "changeMode"]
+};
+const renderer = (data, mode) => {
+  console.clear();
+  process.stdout.write(mode + " MODE\n");
+  process.stdout.write(data);
 };
 
 const main = () => {

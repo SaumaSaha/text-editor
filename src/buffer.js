@@ -27,10 +27,6 @@ class Buffer {
   }
 }
 
-const renderer = (data, mode) => {
-  console.clear();
-  process.stdout.write(mode + " MODE\n");
-  process.stdout.write(data);
-};
 
-module.exports = { Buffer, renderer };
+
+module.exports = { Buffer };

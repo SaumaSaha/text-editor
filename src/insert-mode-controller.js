@@ -1,10 +1,10 @@
 class InsertModeController {
-  #keyBoardController;
+  #kbController;
   #renderer;
   #mode;
 
   constructor(keyBoardController, renderer) {
-    this.#keyBoardController = keyBoardController;
+    this.#kbController = keyBoardController;
     this.#renderer = renderer;
     this.#mode = "INSERT";
   }
@@ -26,15 +26,15 @@ class InsertModeController {
       this.#renderer(buffer.getText(), this.#mode);
     }
 
-    this.#keyBoardController.on("buffer-write", writeToBuffer);
-    this.#keyBoardController.on("new-line", addNewLine);
-    this.#keyBoardController.on("backspace", giveBackSpace);
+    this.#kbController.on("buffer-write", writeToBuffer);
+    this.#kbController.on("new-line", addNewLine);
+    this.#kbController.on("backspace", giveBackSpace);
   }
 
   stop() {
-    this.#keyBoardController.removeAllListeners("buffer-write");
-    this.#keyBoardController.removeAllListeners("new-line");
-    this.#keyBoardController.removeAllListeners("backspace");
+    this.#kbController.removeAllListeners("buffer-write");
+    this.#kbController.removeAllListeners("new-line");
+    this.#kbController.removeAllListeners("backspace");
   }
 }
 
