@@ -1,35 +1,72 @@
 class Buffer {
-  #text;
+  #textBeforeCursor;
+  #textAfterCursor;
   #cursor;
+  #cursorPos;
 
   constructor() {
-    this.#text = "";
+    this.#cursor = "\x1B[5m│\x1B[0m";
+    this.#textBeforeCursor = "";
+    this.#textAfterCursor = "";
+    this.#cursorPos = 0;
   }
 
   storeText(text) {
-    this.#text += text;
+    this.#textBeforeCursor += text;
+    this.#cursorPos += text.length;
   }
 
   removeAlphabet() {
-    this.#text = this.#text.slice(0, -1);
+    this.#textBeforeCursor = this.#textBeforeCursor.slice(0, -1);
+    this.#cursorPos--;
   }
 
   getText() {
-    return this.#text;
+    return this.#textBeforeCursor + this.#cursor + this.#textAfterCursor;
+  }
+
+  saveText() {
+    return this.#textBeforeCursor + this.#textAfterCursor;
   }
 
   deleteLine() {
-    let lastIndexOfNewLine = this.#text.lastIndexOf("\n");
-    if (lastIndexOfNewLine === -1) lastIndexOfNewLine = 0;
-    this.#text = this.#text.slice(0, lastIndexOfNewLine);
+    let lastIndexOfNewLine = (
+      this.#textBeforeCursor + this.#textAfterCursor
+    ).lastIndexOf("\n");
+    if (lastIndexOfNewLine === -1) {
+      lastIndexOfNewLine = 0;
+      this.#cursorPos = 0;
+    }
+    this.#textBeforeCursor = this.#textBeforeCursor.slice(
+      0,
+      lastIndexOfNewLine
+    );
   }
 
   deleteWord() {
-    const lastIndexOfSpace = this.#text.lastIndexOf(" ");
-    this.#text = this.#text.slice(0, lastIndexOfSpace);
+    const lastIndexOfSpace = this.#textBeforeCursor.lastIndexOf(" ");
+    this.#textBeforeCursor = this.#textBeforeCursor.slice(0, lastIndexOfSpace);
   }
 
-  moveCursorLeft() {}
+  moveCursorLeft() {
+    if (this.#cursorPos < 0) return;
+    this.#cursorPos--;
+    this.#textAfterCursor = this.#textBeforeCursor
+      .slice(this.#cursorPos)
+      .concat(this.#textAfterCursor);
+    this.#textBeforeCursor = this.#textBeforeCursor.slice(0, this.#cursorPos);
+  }
+
+  moveCursorRight() {
+    if (
+      this.#cursorPos > (this.#textBeforeCursor + this.#textAfterCursor).length
+    )
+      return;
+    this.#cursorPos++;
+    this.#textBeforeCursor =
+      this.#textBeforeCursor + this.#textAfterCursor.slice(0, 1);
+    this.#textAfterCursor = this.#textAfterCursor.slice(1);
+  }
 }
 
 module.exports = { Buffer };

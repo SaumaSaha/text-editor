@@ -11,8 +11,11 @@ const renderer = (data, mode) => {
   process.stdout.write(data);
 };
 
+const hideCursor = () => process.stdout.write("\u001B[?25l");
+
 const main = () => {
   const fileName = process.argv[2];
+  hideCursor();
   const buffer = new Buffer();
   const keyboardController = new InputController(process.stdin);
   const insertModeController = new InsertModeController(

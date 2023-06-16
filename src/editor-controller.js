@@ -4,6 +4,8 @@ const keyBindingsInsert = {
   "\x1B": ["change-mode", "ESC"],
   "\x7F": ["backspace", "back-space"],
   "\x13": ["save", "save"],
+  "\x1B[D": ["move-left", "move-left"],
+  "\x1B[C": ["move-right", "move-right"],
 };
 
 const keyBindingsNormal = {
@@ -12,6 +14,8 @@ const keyBindingsNormal = {
   i: ["change-mode", "changeMode"],
   q: ["quit", "quit"],
   "\x13": ["save", "save"],
+  "\x1B[D": ["move-left", "move-left"],
+  "\x1B[C": ["move-right", "move-right"],
 };
 
 class EditorController {
@@ -58,7 +62,7 @@ class EditorController {
     this.#kbController.on("key-entered", (key) => this.#giveInstuction(key));
 
     this.#kbController.on("save", () => {
-      const content = this.#buffer.getText();
+      const content = this.#buffer.saveText();
       this.#fs.writeFileSync(this.#fileName, content);
     });
 

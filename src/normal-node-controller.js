@@ -29,6 +29,16 @@ class NormalModeController {
       this.#kbController.stop();
     };
 
+    this.#kbController.on("move-right", () => {
+      buffer.moveCursorRight();
+      this.#renderer(buffer.getText(), this.#mode);
+    });
+
+    this.#kbController.on("move-left", () => {
+      buffer.moveCursorLeft();
+      this.#renderer(buffer.getText(), this.#mode);
+    });
+
     this.#kbController.on("quit", quit);
     this.#kbController.on("delete-line", deleteLine);
     this.#kbController.on("delete-word", deleteWord);
@@ -37,6 +47,8 @@ class NormalModeController {
   stop() {
     this.#kbController.removeAllListeners("delete-line");
     this.#kbController.removeAllListeners("delete-word");
+    this.#kbController.removeAllListeners("move-left");
+    this.#kbController.removeAllListeners("move-right");
   }
 }
 
