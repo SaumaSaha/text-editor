@@ -1,5 +1,7 @@
 class Buffer {
   #text;
+  #cursor;
+
   constructor() {
     this.#text = "";
   }
@@ -17,16 +19,17 @@ class Buffer {
   }
 
   deleteLine() {
-    const lastIndexOfNewLine = this.#text.lastIndexOf("\n")
-    this.#text = this.#text.slice(0, lastIndexOfNewLine)
+    let lastIndexOfNewLine = this.#text.lastIndexOf("\n");
+    if (lastIndexOfNewLine === -1) lastIndexOfNewLine = 0;
+    this.#text = this.#text.slice(0, lastIndexOfNewLine);
   }
 
   deleteWord() {
-    const lastIndexOfSpace = this.#text.lastIndexOf(" ")
-    this.#text = this.#text.slice(0, lastIndexOfSpace)
+    const lastIndexOfSpace = this.#text.lastIndexOf(" ");
+    this.#text = this.#text.slice(0, lastIndexOfSpace);
   }
+
+  moveCursorLeft() {}
 }
-
-
 
 module.exports = { Buffer };

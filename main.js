@@ -5,15 +5,6 @@ const { Buffer } = require("./src/buffer");
 const { NormalModeController } = require("./src/normal-node-controller");
 const { EditorController } = require("./src/editor-controller");
 
-const keyBindings = {
-  "\r": ["new-line", "\n"],
-  "\x1B": ["stop", "ESC"],
-  "\x7F": ["backspace", "back-space"],
-  "\x13": ["save", "save"],
-  "\x04": ["delete-line", "deleteLine"],
-  "\x17": ["delete-word", "deleteWord"],
-  "\x03": ["change-mode", "changeMode"]
-};
 const renderer = (data, mode) => {
   console.clear();
   process.stdout.write(mode + " MODE\n");
@@ -21,25 +12,28 @@ const renderer = (data, mode) => {
 };
 
 const main = () => {
-  const fileNameToSave = process.argv[2];
+  const fileName = process.argv[2];
   const buffer = new Buffer();
-  const keyBoardController = new InputController(process.stdin, keyBindings);
+  const keyboardController = new InputController(process.stdin);
   const insertModeController = new InsertModeController(
-    keyBoardController,
-    renderer,
+    keyboardController,
+    renderer
   );
 
   const normalModeController = new NormalModeController(
-    keyBoardController,
-    renderer,
+    keyboardController,
+    renderer
   );
 
-  const editorController = new EditorController(
-    [normalModeController, insertModeController],
-    keyBoardController,
+  const editorArgs = {
+    modeControllers: [normalModeController, insertModeController],
+    keyboardController,
     fs,
     buffer,
-    fileNameToSave);
+    fileName,
+  };
+
+  const editorController = new EditorController(editorArgs);
 
   editorController.start();
 };

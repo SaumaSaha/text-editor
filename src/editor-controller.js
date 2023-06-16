@@ -1,3 +1,19 @@
+const keyBindingsInsert = {
+  "\r": ["new-line", "\n"],
+  "\x13": ["save", "save"],
+  "\x1B": ["change-mode", "ESC"],
+  "\x7F": ["backspace", "back-space"],
+  "\x13": ["save", "save"],
+};
+
+const keyBindingsNormal = {
+  d: ["delete-line", "deleteLine"],
+  w: ["delete-word", "deleteWord"],
+  i: ["change-mode", "changeMode"],
+  q: ["quit", "quit"],
+  "\x13": ["save", "save"],
+};
+
 class EditorController {
   #modeControllers;
   #currentMode;
@@ -7,11 +23,11 @@ class EditorController {
   #fs;
   #kbController;
 
-  constructor(modeControllers, keyboardController, fileSystem, buffer, fileName = "untitled.txt") {
+  constructor({ modeControllers, keyboardController, fs, buffer, fileName }) {
     this.#modeControllers = modeControllers;
-    this.#currentModeIndex = 0
+    this.#currentModeIndex = 0;
     this.#currentMode = modeControllers[0];
-    this.#fs = fileSystem;
+    this.#fs = fs;
     this.#fileName = fileName;
     this.#buffer = buffer;
     this.#kbController = keyboardController;
@@ -19,33 +35,48 @@ class EditorController {
 
   #changeMode() {
     this.#currentMode.stop();
-    this.#currentModeIndex = (this.#currentModeIndex + 1) % this.#modeControllers.length;
+    this.#currentModeIndex =
+      (this.#currentModeIndex + 1) % this.#modeControllers.length;
     this.#currentMode = this.#modeControllers[this.#currentModeIndex];
     this.#currentMode.start(this.#buffer);
   }
 
+  #giveInstuction(key) {
+    if (this.#currentMode.name() === "NORMAL") {
+      const [event, eventData] = keyBindingsNormal[key] || ["", ""];
+      this.#kbController.emit(event, eventData);
+    } else {
+      const [event, eventData] = keyBindingsInsert[key] || [
+        "buffer-write",
+        key,
+      ];
+      this.#kbController.emit(event, eventData);
+    }
+  }
+
+  #addListener() {
+    this.#kbController.on("key-entered", (key) => this.#giveInstuction(key));
+
+    this.#kbController.on("save", () => {
+      const content = this.#buffer.getText();
+      this.#fs.writeFileSync(this.#fileName, content);
+    });
+
+    this.#kbController.on("change-mode", () => {
+      this.#changeMode();
+    });
+  }
+
   start() {
+    if (this.#fileName === undefined) this.#fileName = "untitled.txt";
     if (this.#fs.existsSync(this.#fileName)) {
       const fileData = this.#fs.readFileSync(this.#fileName);
       this.#buffer.storeText(fileData);
     }
 
-    this.#kbController.on("stop", () => {
-      this.#kbController.stop()
-    })
-
-    this.#kbController.on("save", () => {
-      this.#kbController.stop()
-      const content = this.#buffer.getText()
-      this.#fs.writeFileSync(this.#fileName, content)
-    })
-
-    this.#kbController.on("change-mode", () => {
-      this.#changeMode();
-    })
-
+    this.#addListener();
     this.#currentMode.start(this.#buffer);
-    this.#kbController.start()
+    this.#kbController.start();
   }
 }
 

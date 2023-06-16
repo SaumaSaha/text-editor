@@ -1,33 +1,42 @@
 class NormalModeController {
-  #keyBoardController;
+  #kbController;
   #renderer;
   #mode;
 
-  constructor(keyBoardController, renderer) {
-    this.#keyBoardController = keyBoardController;
+  constructor(kbController, renderer) {
+    this.#kbController = kbController;
     this.#renderer = renderer;
     this.#mode = "NORMAL";
   }
 
+  name() {
+    return this.#mode;
+  }
+
   start(buffer) {
-    this.#renderer(buffer.getText(), this.#mode)
+    this.#renderer(buffer.getText(), this.#mode);
     const deleteLine = () => {
       buffer.deleteLine();
       this.#renderer(buffer.getText(), this.#mode);
-    }
+    };
 
     const deleteWord = () => {
       buffer.deleteWord();
       this.#renderer(buffer.getText(), this.#mode);
-    }
+    };
 
-    this.#keyBoardController.on("delete-line", deleteLine);
-    this.#keyBoardController.on("delete-word", deleteWord);
+    const quit = () => {
+      this.#kbController.stop();
+    };
+
+    this.#kbController.on("quit", quit);
+    this.#kbController.on("delete-line", deleteLine);
+    this.#kbController.on("delete-word", deleteWord);
   }
 
   stop() {
-    this.#keyBoardController.removeAllListeners("delete-line");
-    this.#keyBoardController.removeAllListeners("delete-word");
+    this.#kbController.removeAllListeners("delete-line");
+    this.#kbController.removeAllListeners("delete-word");
   }
 }
 

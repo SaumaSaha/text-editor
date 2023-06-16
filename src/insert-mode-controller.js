@@ -9,22 +9,26 @@ class InsertModeController {
     this.#mode = "INSERT";
   }
 
+  name() {
+    return this.#mode;
+  }
+
   start(buffer) {
-    this.#renderer(buffer.getText(), this.#mode)
+    this.#renderer(buffer.getText(), this.#mode);
     const writeToBuffer = (char) => {
       buffer.storeText(char);
       this.#renderer(buffer.getText(), this.#mode);
-    }
+    };
 
     const addNewLine = (char) => {
       buffer.storeText(char);
       this.#renderer(buffer.getText(), this.#mode);
-    }
+    };
 
     const giveBackSpace = () => {
       buffer.removeAlphabet();
       this.#renderer(buffer.getText(), this.#mode);
-    }
+    };
 
     this.#kbController.on("buffer-write", writeToBuffer);
     this.#kbController.on("new-line", addNewLine);
